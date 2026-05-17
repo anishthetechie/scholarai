@@ -241,7 +241,7 @@ def main_area():
             with st.expander(f"📎 Sources ({len(st.session_state.sources_for_last_msg)} chunks retrieved)", expanded=False):
                 for i, (text, meta) in enumerate(st.session_state.sources_for_last_msg, 1):
                     source_name = os.path.basename(meta["source"]) or "Document"
-                    page = meta["page"] + 1
+                    page = int(meta["page"]) + 1
                     score = meta["score"]
                     st.markdown(
                         f'<div class="source-card">'

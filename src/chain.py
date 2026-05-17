@@ -20,7 +20,7 @@ def build_context_str(chunks: List[Tuple[str, dict]]) -> str:
     parts = []
     for i, (text, meta) in enumerate(chunks, 1):
         source = os.path.basename(meta["source"])
-        page = meta["page"] + 1
+        page = int(meta["page"]) + 1
         parts.append(f"[Source {i}: {source}, Page {page}]\n{text}")
     return "\n\n---\n\n".join(parts)
 
