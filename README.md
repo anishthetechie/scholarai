@@ -2,7 +2,14 @@
 
 An AI-powered research assistant that lets you upload PDFs and ask intelligent questions — with cited answers pulled directly from your documents.
 
-Built with RAG (Retrieval-Augmented Generation) using **Groq**, **Pinecone**, and **Google Embeddings**.
+Built with RAG (Retrieval-Augmented Generation) using a **FastAPI** backend, **Groq**, **Pinecone**, and **Google Embeddings**, with a **Streamlit** frontend.
+
+## Architecture
+
+```
+Streamlit client (app.py)  ──HTTP──►  FastAPI backend (server/)  ──►  Pinecone + Groq
+   [Streamlit Cloud]                       [Render]
+```
 
 ## Features
 
@@ -10,14 +17,15 @@ Built with RAG (Retrieval-Augmented Generation) using **Groq**, **Pinecone**, an
 - **Named Collections** — organise documents into separate topic groups
 - **Cited Answers** — every response shows which document and page it came from
 - **Document Summaries** — one-click structured summary of any collection
-- **Streaming Responses** — real-time token-by-token output via Groq
+- **REST API** — FastAPI backend with `/upload_pdfs/`, `/ask/`, `/summarize/`, `/collections/`
 - **Multi-turn Conversations** — maintains chat history for follow-up questions
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Streamlit |
+| Frontend | Streamlit (deployed on Streamlit Cloud) |
+| Backend | FastAPI + Uvicorn (deployed on Render) |
 | LLM | Groq (llama-3.3-70b-versatile) |
 | Embeddings | Google Generative AI (gemini-embedding-001) |
 | Vector DB | Pinecone (Serverless) |
@@ -28,11 +36,20 @@ Built with RAG (Retrieval-Augmented Generation) using **Groq**, **Pinecone**, an
 ```bash
 git clone https://github.com/anishthetechie/scholarai.git
 cd scholarai
+
+# 1. Start the backend
+cd server
 pip install -r requirements.txt
-cp .env.example .env
-# Fill in your API keys in .env
-streamlit run app.py
+cp ../.env.example .env   # fill in your API keys
+uvicorn main:app --reload --port 8000
+
+# 2. In another terminal, start the frontend
+cd ..
+pip install -r requirements.txt
+streamlit run app.py      # talks to http://127.0.0.1:8000 by default
 ```
+
+Set `API_URL` (env var or Streamlit secret) to point the client at a deployed backend.
 
 ## Required API Keys
 

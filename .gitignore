@@ -11,3 +11,5 @@ build/
 Thumbs.db
 *.pdf
 .streamlit/secrets.toml
+server/uploaded_docs/
+.pytest_cache/

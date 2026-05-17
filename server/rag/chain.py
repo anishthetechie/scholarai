@@ -1,5 +1,5 @@
 import os
-from typing import Generator, List, Tuple
+from typing import List, Tuple
 
 from groq import Groq
 
@@ -25,17 +25,20 @@ def build_context_str(chunks: List[Tuple[str, dict]]) -> str:
     return "\n\n---\n\n".join(parts)
 
 
-def stream_answer(
+def answer_question(
     query: str,
     namespace: str,
     chat_history: List[dict],
-) -> Tuple[Generator, List[Tuple[str, dict]]]:
+) -> Tuple[str, List[dict]]:
     chunks = retrieve_context(query, namespace)
 
     if not chunks:
-        def empty_gen():
-            yield "I couldn't find relevant information in the uploaded documents to answer your question. Please make sure you've uploaded the relevant documents to this collection."
-        return empty_gen(), []
+        return (
+            "I couldn't find relevant information in the uploaded documents to "
+            "answer your question. Please make sure you've uploaded the relevant "
+            "documents to this collection.",
+            [],
+        )
 
     context_str = build_context_str(chunks)
 
@@ -48,37 +51,35 @@ def stream_answer(
     })
 
     client = Groq(api_key=os.environ["GROQ_API_KEY"])
-
-    stream = client.chat.completions.create(
+    resp = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=messages,
         temperature=0.2,
         max_tokens=1024,
-        stream=True,
     )
+    answer = resp.choices[0].message.content
 
-    def token_gen():
-        for chunk in stream:
-            delta = chunk.choices[0].delta.content
-            if delta:
-                yield delta
+    sources = [
+        {
+            "source": os.path.basename(meta["source"]) or "Document",
+            "page": int(meta["page"]) + 1,
+            "score": meta["score"],
+            "snippet": text[:250],
+        }
+        for text, meta in chunks
+    ]
+    return answer, sources
 
-    return token_gen(), chunks
 
+def summarize_collection(namespace: str) -> Tuple[str, List[dict]]:
+    chunks = retrieve_context("summarize all main topics and findings", namespace, top_k=10)
+    if not chunks:
+        return "No documents found in this collection to summarize.", []
 
-def summarize_collection(namespace: str) -> Generator:
-    from .retriever import retrieve_context as rc
-
-    sample_chunks = rc("summarize all main topics and findings", namespace, top_k=10)
-    if not sample_chunks:
-        def err():
-            yield "No documents found in this collection to summarize."
-        return err()
-
-    context_str = build_context_str(sample_chunks)
+    context_str = build_context_str(chunks)
 
     client = Groq(api_key=os.environ["GROQ_API_KEY"])
-    stream = client.chat.completions.create(
+    resp = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
@@ -89,13 +90,5 @@ def summarize_collection(namespace: str) -> Generator:
         ],
         temperature=0.3,
         max_tokens=1500,
-        stream=True,
     )
-
-    def token_gen():
-        for chunk in stream:
-            delta = chunk.choices[0].delta.content
-            if delta:
-                yield delta
-
-    return token_gen()
+    return resp.choices[0].message.content, []
