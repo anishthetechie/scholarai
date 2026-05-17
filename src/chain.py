@@ -5,7 +5,7 @@ from groq import Groq
 
 from .retriever import retrieve_context
 
-SYSTEM_PROMPT = """You are ScholarAI, an intelligent research assistant. Your job is to help users understand documents, research papers, and reports by answering their questions accurately and concisely.
+SYSTEM_PROMPT = """You are MedicalGPT, an intelligent research assistant. Your job is to help users understand documents, research papers, and reports by answering their questions accurately and concisely.
 
 Guidelines:
 - Answer ONLY based on the provided context. Do not hallucinate or use outside knowledge.

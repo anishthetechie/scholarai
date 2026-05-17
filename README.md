@@ -1,4 +1,4 @@
-# ScholarAI 📚
+# MedicalGPT 📚
 
 An AI-powered research assistant that lets you upload PDFs and ask intelligent questions — with cited answers pulled directly from your documents.
 

@@ -17,7 +17,7 @@ from src.chain import stream_answer, summarize_collection
 from src.processor import delete_namespace, list_namespaces, process_and_index_pdfs
 
 st.set_page_config(
-    page_title="ScholarAI",
+    page_title="MedicalGPT",
     page_icon="📚",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -103,7 +103,7 @@ def refresh_collections():
 
 def sidebar():
     with st.sidebar:
-        st.markdown("## 📚 ScholarAI")
+        st.markdown("## 📚 MedicalGPT")
         st.markdown("---")
 
         st.markdown("### New Collection")
@@ -178,7 +178,7 @@ def sidebar():
 def main_area():
     st.markdown("""
     <div class="scholar-header">
-        <h1>ScholarAI</h1>
+        <h1>MedicalGPT</h1>
         <p>Upload research papers & documents — ask anything, get cited answers.</p>
     </div>
     """, unsafe_allow_html=True)
