@@ -2,6 +2,8 @@
 
 An AI-powered research assistant that lets you upload PDFs and ask intelligent questions — with cited answers pulled directly from your documents.
 
+Link: https://medicalgptanish.streamlit.app/
+
 Built with RAG (Retrieval-Augmented Generation) using a **FastAPI** backend, **Groq**, **Pinecone**, and **Google Embeddings**, with a **Streamlit** frontend.
 
 ## Architecture
